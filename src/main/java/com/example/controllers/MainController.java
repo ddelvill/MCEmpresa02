@@ -3,12 +3,14 @@ package com.example.controllers;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -131,6 +133,78 @@ public class MainController {
         return "redirect:/listar";
     }
 
+    @GetMapping("/frmActualizar/{id}")
+    public String frmActualizarEmpleado (@PathVariable(name = "id") int idEmpleado,
+    Model model) {
+
+    Empleado empleado = empleadoService.findById(idEmpleado);
+
+    List<Telefono> todosTelefonos = telefonoService.findAll();
+
+    List<Telefono> telefonosEstudiante = todosTelefonos.stream()
+                    .filter(t -> t.getEmpleado().getId() == idEmpleado)
+                    .collect(Collectors.toList());
+
+    String numerosTelefono = telefonosEstudiante.stream().map(t -> t.getNumero()).collect(Collectors.joining(";"));                
+
+ 
+    List<Correo> todosCorreos = correoService.findAll();
+
+    List<Correo> correosEstudiante = todosCorreos.stream()
+                    .filter(t -> t.getEmpleado().getId() == idEmpleado)
+                    .collect(Collectors.toList());
+
+    String emailsCorreo = correosEstudiante.stream().map(t -> t.getEmail()).collect(Collectors.joining(";"));                
+   
+  
+    List<Departamento> departamentos = departamentoService.findAll();
+
+    model.addAttribute("empleado", empleado);
+    model.addAttribute("telefonos", numerosTelefono);
+    model.addAttribute("correos", emailsCorreo);
+    model.addAttribute("departamentos", departamentos);
+ 
+
+
+        return "views/formularioAltaEmpleado";   
+    }
+
+ 
+    @GetMapping("/borrar/{id}")
+
+    public String borrarEmpleado (@PathVariable(name="id") int idEmpleado) {
+
+     empleadoService.delete(empleadoService.findById(idEmpleado));
+
+    return "redirect:/listar";
+   }   
+
+   @GetMapping("/detallesEmpleado/{id}")
+
+   public ModelAndView detallesEmpleado(@PathVariable(name = "id") int idEmpleado) {
+
+     Empleado empleado = empleadoService.findById(idEmpleado);
+
+     List<Telefono> listaTelefonos = telefonoService.findByEmpleado(empleado);
+
+     List<String> telefonos = listaTelefonos.stream().map(t -> t.getNumero()).toList();
+
+     List<Correo> listaCorreos = correoService.findbyEmpleado(empleado);
+
+     List<String> correos = listaCorreos.stream().map(t -> t.getEmail()).toList();     
+
+     ModelAndView mav = new ModelAndView("views/detallesEmpleado");
+
+     mav.addObject("empleado", empleado);
+     mav.addObject("telefonos", telefonos);
+     mav.addObject("correos", correos);
+
+
+
+    return mav;
+
+   }
+              
 
 
 }
