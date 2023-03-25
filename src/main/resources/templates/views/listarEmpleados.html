@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=>, initial-scale=1.0">
+    <title>Listar</title>
+</head>
+<body>
+    <h1>Listado de Empleados</h1>
+
+    <table> 
+        <thead> 
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Fecha de Alta</th>
+                <th>Genero</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+             </tr>
+        </thead>
+        <tbody>
+            <tr th:each=" empleado : ${empleados}">
+                <td th:text="${empleado.id}"></td>
+                <td th:text="${empleado.nombre}"></td>
+                <td th:text="${empleado.apellidos}"></td>
+                <td th:text="${empleado.fechaAlta}"></td>
+                <td th:text="${empleado.genero}"></td>
+                <td th:text="${empleado.departamento.nombre}"></td>
+                <td>
+                    <a th:href="@{/frmActualizar/}+${empleado.id}"> Actualizar</a>
+                    <a th:href="@{/borrar/}+${empleado.id}"> Borrar</a>
+                    <a th:href="@{/detallesEstudiante/}+${empleado.id}"> Detalles</a>
+                </td>
+            </tr>
+
+        </tbody>
+          
+    </table>
+    <div>
+        <a th:href="@{/frmAltaEmpleado}"> Formulario de Alta de Estudiante</a>
+    </div>
+</body>
+</html>
